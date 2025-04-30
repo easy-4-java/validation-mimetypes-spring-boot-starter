@@ -15,11 +15,30 @@
  */
 package com.github.hiwepy.validation;
 
+import com.github.hiwepy.validation.utils.TikaUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.tika.mime.MimeType;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+
+import java.io.File;
+
 /**
  * TODO
  * @author 		： <a href="https://github.com/hiwepy">hiwepy</a>
  */
 
 public class Test {
+
+    public static void main(String[] args) throws Exception {
+
+        Resource resource = new ClassPathResource("aaaa.pdf");
+        MimeType detectMimeType = TikaUtils.detectMimeType(resource.getInputStream());
+        System.out.println("文件类型为：" + detectMimeType.getAcronym());
+        System.out.println("文件类型为：" + detectMimeType.getType());
+        System.out.println("文件扩展名为：" + detectMimeType.getExtension());
+        System.out.println("文件扩展名为：" + FilenameUtils.getExtension(detectMimeType.getExtension()));
+        detectMimeType.getExtensions().forEach(System.out::println);
+    }
 
 }

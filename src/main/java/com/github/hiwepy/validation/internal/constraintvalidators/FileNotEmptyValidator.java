@@ -1,15 +1,12 @@
 package com.github.hiwepy.validation.internal.constraintvalidators;
 
-import com.github.hiwepy.validation.MimeTypeDetectorHolder;
 import com.github.hiwepy.validation.constraints.FileNotEmpty;
-import com.github.hiwepy.validation.utils.FilemimeUtils;
-import com.github.hiwepy.validation.utils.FiletypeUtils;
+import com.github.hiwepy.validation.utils.TikaUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.ArrayUtils;
-import org.overviewproject.mime_types.GetBytesException;
+import org.apache.tika.mime.MimeType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.convert.DataSizeUnit;
 import org.springframework.util.StringUtils;
 import org.springframework.util.unit.DataSize;
 import org.springframework.util.unit.DataUnit;
@@ -17,8 +14,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
-import java.io.IOException;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -30,6 +29,7 @@ import java.util.stream.Stream;
  */
 public class FileNotEmptyValidator implements ConstraintValidator<FileNotEmpty, MultipartFile> {
 
+    public static final char EXTENSION_SEPARATOR = '.';
     private Logger log = LoggerFactory.getLogger(FileNotEmptyValidator.class);
     private Set<String> extensionSet = new HashSet<>();
     private Set<String> mimeTypeSet = new HashSet<>();
@@ -55,40 +55,32 @@ public class FileNotEmptyValidator implements ConstraintValidator<FileNotEmpty, 
         if (Objects.nonNull(maxSize) && maxSize.compareTo(DataSize.of(multipartFile.getSize(), DataUnit.BYTES)) <= 0) {
             return Boolean.FALSE;
         }
-        // 3、验证文件后缀是否满足要求
-        if (!extensionSet.isEmpty()) {
-            String detectExtension = null;
-            try {
-                detectExtension = FiletypeUtils.getFileType(multipartFile.getInputStream());
-            } catch (Exception e) {
-                log.error(e.getMessage(), e);
-            }
-            if(!StringUtils.hasText(detectExtension)){
-                detectExtension = FilenameUtils.getExtension(multipartFile.getOriginalFilename());
-            }
-            if(!StringUtils.hasText(detectExtension)){
-                return Boolean.FALSE;
-            }
-            if(!extensionSet.contains(detectExtension.toLowerCase())){
-                return Boolean.FALSE;
-            }
+        // 3、验证文件后缀和 content type 是否满足要求
+        if(extensionSet.isEmpty() && mimeTypeSet.isEmpty()){
+            return Boolean.TRUE;
         }
-        // 4、验证文件 content type 是否满足要求
-        if (!mimeTypeSet.isEmpty()) {
-            String detectMimeType = null;
-            try {
-                detectMimeType = MimeTypeDetectorHolder.instance().getDetector().detectMimeType(multipartFile.getOriginalFilename(), multipartFile.getInputStream());
-            } catch (Exception e) {
-                log.error(e.getMessage(), e);
+        try {
+            // 3.1、解析文件类型
+            MimeType detectMimeType = TikaUtils.detectMimeType(multipartFile.getInputStream());
+            if(Objects.isNull(detectMimeType)){
                 return Boolean.FALSE;
             }
-            if(!StringUtils.hasText(detectMimeType)){
+            // 3.2、验证文件后缀是否满足要求
+            if (!extensionSet.isEmpty()) {
+                String extension = FilenameUtils.getExtension(detectMimeType.getExtension());
+                if(!extensionSet.contains(extension.toLowerCase())){
+                    return Boolean.FALSE;
+                }
+            }
+            // 3.3、验证文件 content type 是否满足要求
+            if (!mimeTypeSet.isEmpty() && !mimeTypeSet.contains(detectMimeType.getType().toString())) {
                 return Boolean.FALSE;
             }
-            if(!mimeTypeSet.contains(detectMimeType.toLowerCase())){
-                return Boolean.FALSE;
-            }
+            // 4、验证通过
+            return Boolean.TRUE;
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            return Boolean.FALSE;
         }
-        return Boolean.TRUE;
     }
 }
