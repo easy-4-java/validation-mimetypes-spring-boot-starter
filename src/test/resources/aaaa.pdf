@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>自定义弹窗</title>
+    <style>
+        .custom-alert {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            border: 1px solid #ccc;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+        }
+        .custom-alert button {
+            padding: 5px 10px;
+            background: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>页面内容</h1>
+    <p>页面加载时会显示自定义弹窗。</p>
+
+    <div id="customAlert" class="custom-alert" style="display: none;">
+        <h3>自定义弹窗</h3>
+        <p>这是一个 HTML + CSS 模拟的弹窗。</p>
+        <button onclick="document.getElementById('customAlert').style.display = 'none'">关闭</button>
+    </div>
+
+    <script>
+        window.onload = function() {
+            document.getElementById("customAlert").style.display = "block";
+        };
+    </script>
+</body>
+</html>
