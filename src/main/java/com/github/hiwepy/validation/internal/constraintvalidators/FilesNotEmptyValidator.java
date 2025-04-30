@@ -1,12 +1,12 @@
 package com.github.hiwepy.validation.internal.constraintvalidators;
 
-import com.github.hiwepy.validation.MimeTypeDetectorHolder;
 import com.github.hiwepy.validation.constraints.FileNotEmpty;
-import com.github.hiwepy.validation.utils.FiletypeUtils;
+import com.github.hiwepy.validation.utils.TikaUtils;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.tika.mime.MimeType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
@@ -49,47 +49,39 @@ public class FilesNotEmptyValidator implements ConstraintValidator<FileNotEmpty,
         if (Objects.isNull(multipartFiles) || multipartFiles.length == 0) {
             return !required;
         }
-        // 2、循环验证文件
+        // 2、验证文件后缀和 content type 是否满足要求
+        if(extensionSet.isEmpty() && mimeTypeSet.isEmpty()){
+            return Boolean.TRUE;
+        }
+        // 3、循环验证文件
         for (MultipartFile multipartFile : multipartFiles) {
-            // 2.1、验证文件大小是否满足要求
+            // 3.1、验证文件大小是否满足要求
             if (Objects.nonNull(maxSize) && maxSize.compareTo(DataSize.of(multipartFile.getSize(), DataUnit.BYTES)) <= 0) {
                 return Boolean.FALSE;
             }
-            // 2.2、验证文件后缀是否满足要求
-            if (!extensionSet.isEmpty()) {
-                String detectExtension = null;
-                try {
-                    detectExtension = FiletypeUtils.getFileType(multipartFile.getInputStream());
-                } catch (Exception e) {
-                    log.error(e.getMessage(), e);
-                }
-                if(!StringUtils.hasText(detectExtension)){
-                    detectExtension = FilenameUtils.getExtension(multipartFile.getOriginalFilename());
-                }
-                if(!StringUtils.hasText(detectExtension)){
+            try {
+                // 3.2、解析文件类型
+                MimeType detectMimeType = TikaUtils.detectMimeType(multipartFile.getInputStream());
+                if(Objects.isNull(detectMimeType)){
                     return Boolean.FALSE;
                 }
-                if(!extensionSet.contains(detectExtension.toLowerCase())){
+                // 3.3、验证文件后缀是否满足要求
+                if (!extensionSet.isEmpty()) {
+                    String extension = FilenameUtils.getExtension(detectMimeType.getExtension());
+                    if(!extensionSet.contains(extension.toLowerCase())){
+                        return Boolean.FALSE;
+                    }
+                }
+                // 3.4、验证文件 content type 是否满足要求
+                if (!mimeTypeSet.isEmpty() && !mimeTypeSet.contains(detectMimeType.getType().toString())) {
                     return Boolean.FALSE;
                 }
-            }
-            // 2.3、验证文件 content type 是否满足要求
-            if (!mimeTypeSet.isEmpty()) {
-                String detectMimeType = null;
-                try {
-                    detectMimeType = MimeTypeDetectorHolder.instance().getDetector().detectMimeType(multipartFile.getOriginalFilename(), multipartFile.getInputStream());
-                } catch (Exception e) {
-                    log.error(e.getMessage(), e);
-                    return Boolean.FALSE;
-                }
-                if(!StringUtils.hasText(detectMimeType)){
-                    return Boolean.FALSE;
-                }
-                if(!mimeTypeSet.contains(detectMimeType.toLowerCase())){
-                    return Boolean.FALSE;
-                }
+            } catch (Exception e) {
+                log.error(e.getMessage(), e);
+                return Boolean.FALSE;
             }
         }
+        // 4、验证通过
         return Boolean.TRUE;
     }
 }
