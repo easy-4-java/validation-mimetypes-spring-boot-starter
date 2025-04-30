@@ -365,7 +365,7 @@
         <maven-resources-plugin.version>3.1.0</maven-resources-plugin.version>
         <maven-surefire-plugin.version>2.22.1</maven-surefire-plugin.version>
 		<maven-nexus-staging-plugin.version>1.6.8</maven-nexus-staging-plugin.version>
-		<mime-types.version>2.0.0</mime-types.version>
+		<tika.version>2.9.3</tika.version>
 	</properties>
 
 	<dependencies>
@@ -446,14 +446,12 @@
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
 		</dependency>
-
-		<!-- https://mvnrepository.com/artifact/org.overviewproject/mime-types -->
+		<!-- https://mvnrepository.com/artifact/org.apache.tika/tika-core -->
 		<dependency>
-		    <groupId>org.overviewproject</groupId>
-		    <artifactId>mime-types</artifactId>
-		    <version>${mime-types.version}</version>
+			<groupId>org.apache.tika</groupId>
+			<artifactId>tika-core</artifactId>
+			<version>${tika.version}</version>
 		</dependency>
-
 	</dependencies>
 
 </project>
