@@ -1,33 +1,49 @@
 package com.github.hiwepy.validation.utils;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
-
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Properties;
 import java.util.concurrent.Callable;
 
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+
+@Slf4j
 @SuppressWarnings("rawtypes")
 public abstract class FiletypeUtils {
 
 	protected static final String MIMETYPES_PROPERTIES = "fileTypes.properties";
 	protected static Properties mFileTypes;
-	
+
 	static{
-		try {
-			mFileTypes = new Properties();
-			mFileTypes.load(FilemimeUtils.class.getResourceAsStream(MIMETYPES_PROPERTIES));
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+
+        try {
+            mFileTypes = new Properties();
+            // 创建 ClassPathResource 实例
+            Resource resource = new ClassPathResource(MIMETYPES_PROPERTIES);
+            // 检查资源是否存在
+            if (resource.exists()) {
+                // 获取资源的输入流
+                try (InputStream inputStream = resource.getInputStream()) {
+                    // 读取资源内容
+                    mFileTypes.load(inputStream);
+                }
+            } else {
+                log.warn("Resource " + MIMETYPES_PROPERTIES + " not found in classpath.");
+            }
+        } catch (Exception e) {
+            log.error(MIMETYPES_PROPERTIES + " load error: ", e);
+        }
 	}
-	
+
 	public static String getFileType(File file) {
 		if (file == null) {
 			return null;
@@ -37,13 +53,13 @@ public abstract class FiletypeUtils {
         }
         String header = get10ByteHeader(file);
         String fileSuffix = mFileTypes.getProperty(header);
-		/* 
+		/*
 		 * 优化处理：在不同的设备上同样类型的文件，文件头前面内容未必一致，可能只有前几个一致，后面就不同了
 		 * （例如：jpg类型文件，在不同手机上，lennovo k900前10个是一致的，但是MI3只有前5个字符一致，后面是不一样的，所有一些情况进行特殊处理）当整个头文件失败后，
 		 * 在进行前5个字符截取对比处理，优化具体如下：
 		 */
         if(StringUtils.isEmpty(fileSuffix)){
-        	
+
 			Iterator keyList = mFileTypes.keySet().iterator();
         	//并不是所有的文件格式前10 byte（jpg）都一致，前五个byte一致即可
             String key,keySearchPrefix = header.substring(0,5);
@@ -55,13 +71,13 @@ public abstract class FiletypeUtils {
                 }
             }
         }
-        
+
         //前5个字符截取对比处理没有找到，则进行特殊处理
         if(StringUtils.isEmpty(fileSuffix)){
         	header = get3ByteHeader(file);
         	fileSuffix = mFileTypes.getProperty(header);
         }
-		
+
 		return fileSuffix;
 	}
 
@@ -105,10 +121,10 @@ public abstract class FiletypeUtils {
         if (bytes == null || bytes.length < 11) {
             return null;
         }
-		
+
 		String header = bytesToHexString(ArrayUtils.subarray(bytes, 0, 10));
 		String fileSuffix = mFileTypes.getProperty(header);
-		/* 
+		/*
 		 * 优化处理：在不同的设备上同样类型的文件，文件头前面内容未必一致，可能只有前几个一致，后面就不同了
 		 * （例如：jpg类型文件，在不同手机上，lennovo k900前10个是一致的，但是MI3只有前5个字符一致，后面是不一样的，所有一些情况进行特殊处理）当整个头文件失败后，
 		 * 在进行前5个字符截取对比处理，优化具体如下：
@@ -125,23 +141,23 @@ public abstract class FiletypeUtils {
                 }
             }
         }
-        
+
         //前5个字符截取对比处理没有找到，则进行特殊处理
         if(StringUtils.isEmpty(fileSuffix)){
         	header = bytesToHexString(ArrayUtils.subarray(bytes, 0, 3));
         	fileSuffix = mFileTypes.getProperty(header);
         }
-		
+
 		return fileSuffix;
-		
+
 	}
-	
+
 	@SuppressWarnings("deprecation")
 	private static String get10ByteHeader(File file) {
         InputStream input = null;
         String value = null;
         try {
-            input = new FileInputStream(file);
+            input = Files.newInputStream(file.toPath());
             byte[] b = new byte[10];
             input.read(b, 0, b.length);
             value = bytesToHexString(b);
@@ -151,13 +167,13 @@ public abstract class FiletypeUtils {
         }
         return value;
     }
-	
+
 	@SuppressWarnings("deprecation")
 	private static String get3ByteHeader(File file) {
         InputStream input = null;
         String value = null;
         try {
-            input = new FileInputStream(file);
+            input = Files.newInputStream(file.toPath());
             byte[] b = new byte[3];
             input.read(b, 0, b.length);
             value = bytesToHexString(b);
@@ -183,5 +199,10 @@ public abstract class FiletypeUtils {
         }
         return stringBuilder.toString();
     }
-    
+
+
+    public static void main(String[] args) {
+        System.out.println("FileMimeUtils.getFileType()=" + getFileType(new File("d://大风车歌词.pdf")));
+    }
+
 }
