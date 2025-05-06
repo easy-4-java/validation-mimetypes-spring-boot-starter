@@ -1,12 +1,14 @@
 package com.github.hiwepy.validation.internal.constraintvalidators;
 
 import com.github.hiwepy.validation.constraints.FileNotEmpty;
+import com.github.hiwepy.validation.provider.FileContentCheckStrategy;
 import com.github.hiwepy.validation.utils.TikaUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.tika.mime.MimeType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.util.unit.DataSize;
 import org.springframework.util.unit.DataUnit;
@@ -35,6 +37,10 @@ public class FileNotEmptyValidator implements ConstraintValidator<FileNotEmpty, 
     private Set<String> mimeTypeSet = new HashSet<>();
     private DataSize maxSize;
     private boolean required;
+
+
+    @Autowired
+    private FileContentCheckStrategy contentCheckStrategy;
 
     @Override
     public void initialize(FileNotEmpty annotation) {
@@ -76,7 +82,11 @@ public class FileNotEmptyValidator implements ConstraintValidator<FileNotEmpty, 
             if (!mimeTypeSet.isEmpty() && !mimeTypeSet.contains(detectMimeType.getType().toString())) {
                 return Boolean.FALSE;
             }
-            // 4、验证通过
+            // 4、验证文件内容
+            if(Objects.nonNull(contentCheckStrategy) && !contentCheckStrategy.validate(detectMimeType,multipartFile)){
+                return Boolean.FALSE;
+            }
+            // 5、验证通过
             return Boolean.TRUE;
         } catch (Exception e) {
             log.error(e.getMessage(), e);
