@@ -2,10 +2,11 @@ package com.github.hiwepy.validation.constraints;
 
 import com.github.hiwepy.validation.internal.constraintvalidators.FileNotEmptyValidator;
 import com.github.hiwepy.validation.internal.constraintvalidators.FilesNotEmptyValidator;
-import jakarta.validation.Constraint;
-import jakarta.validation.Payload;
 
+import javax.validation.Constraint;
+import javax.validation.Payload;
 import java.lang.annotation.*;
+import java.util.function.Function;
 
 /**
  * jsr303 文件格式校验注解
@@ -50,11 +51,10 @@ public @interface FileNotEmpty {
     String[] extensions() default {};
 
     /**
-     * 需要校验的 mime type 数组
-     *
-     * @return the mime type the annotated MultipartFile must match, e.g. application/pdf. Per default any mime type  is allowed
+     * 是否必填 为 false时文件为空则不校验格式，不为空则校验格式 为true时文件不能为空且需要验证格式
+     * @return the boolean
      */
-    String[] mimeTypes() default {};
+    boolean required() default true;
 
     /**
      * 允许的文件大小，e.g. 2MB；格式参加
@@ -64,9 +64,10 @@ public @interface FileNotEmpty {
     String maxSize() default "2MB";
 
     /**
-     * 是否必填 为 false时文件为空则不校验格式，不为空则校验格式 为true时文件不能为空且需要验证格式
-     * @return the boolean
+     * 需要校验的 mime type 数组
+     *
+     * @return the mime type the annotated MultipartFile must match, e.g. application/pdf. Per default any mime type  is allowed
      */
-    boolean required() default true;
+    String[] mimeTypes() default {};
 
 }

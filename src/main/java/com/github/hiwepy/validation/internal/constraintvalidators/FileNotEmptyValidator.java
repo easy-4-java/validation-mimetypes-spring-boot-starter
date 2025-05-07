@@ -1,19 +1,22 @@
 package com.github.hiwepy.validation.internal.constraintvalidators;
 
 import com.github.hiwepy.validation.constraints.FileNotEmpty;
-import com.github.hiwepy.validation.utils.TikaUtils;
-import jakarta.validation.ConstraintValidator;
-import jakarta.validation.ConstraintValidatorContext;
+import com.github.hiwepy.validation.provider.FileContentCheckStrategy;
+import com.github.hiwepy.validation.utils.MimetypeUtil;
+import com.github.hiwepy.validation.utils.TikaUtil;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.tika.mime.MimeType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.util.unit.DataSize;
 import org.springframework.util.unit.DataUnit;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.ConstraintValidator;
+import javax.validation.ConstraintValidatorContext;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Objects;
@@ -35,6 +38,9 @@ public class FileNotEmptyValidator implements ConstraintValidator<FileNotEmpty, 
     private Set<String> mimeTypeSet = new HashSet<>();
     private DataSize maxSize;
     private boolean required;
+
+    @Autowired
+    private FileContentCheckStrategy contentCheckStrategy;
 
     @Override
     public void initialize(FileNotEmpty annotation) {
@@ -60,23 +66,51 @@ public class FileNotEmptyValidator implements ConstraintValidator<FileNotEmpty, 
             return Boolean.TRUE;
         }
         try {
-            // 3.1、解析文件类型
-            MimeType detectMimeType = TikaUtils.detectMimeType(multipartFile.getInputStream());
-            if(Objects.isNull(detectMimeType)){
-                return Boolean.FALSE;
-            }
-            // 3.2、验证文件后缀是否满足要求
-            if (!extensionSet.isEmpty()) {
-                String extension = FilenameUtils.getExtension(detectMimeType.getExtension());
-                if(!extensionSet.contains(extension.toLowerCase())){
+            // 4.1、首先尝试使用Apache Tika 解析文件类型
+            MimeType detectMimeType = TikaUtil.detectMimeType(multipartFile.getInputStream());
+            if(Objects.nonNull(detectMimeType)
+                    && StringUtils.hasText(detectMimeType.getExtension())
+                    && StringUtils.hasText(detectMimeType.getName())){
+                // 4.1.1、验证文件后缀是否满足要求
+                if (!extensionSet.isEmpty()) {
+                    String extension = FilenameUtils.getExtension(detectMimeType.getExtension());
+                    if(!extensionSet.contains(extension.toLowerCase())){
+                        return Boolean.FALSE;
+                    }
+                }
+                // 4.1.2、验证文件 content type 是否满足要求
+                if (!mimeTypeSet.isEmpty()) {
+                    if(!mimeTypeSet.contains(detectMimeType.getName().toLowerCase())){
+                        return Boolean.FALSE;
+                    }
+                }
+                // 4.1.3、验证文件内容
+                if(Objects.nonNull(contentCheckStrategy) && !contentCheckStrategy.check(detectMimeType, multipartFile)){
                     return Boolean.FALSE;
                 }
             }
-            // 3.3、验证文件 content type 是否满足要求
-            if (!mimeTypeSet.isEmpty() && !mimeTypeSet.contains(detectMimeType.getType().toString())) {
-                return Boolean.FALSE;
+            // 4.2、如果 Apache Tika 解析失败，则使用 MimetypesFileTypeMap 解析文件类型
+            else {
+                // 4.2.1、验证文件后缀是否满足要求
+                if (!extensionSet.isEmpty()) {
+                    String extension = FilenameUtils.getExtension(multipartFile.getOriginalFilename());
+                    if(!extensionSet.contains(extension.toLowerCase())){
+                        return Boolean.FALSE;
+                    }
+                }
+                // 4.2.2、验证文件 content type 是否满足要求
+                if(!mimeTypeSet.isEmpty()){
+                    String mimeType = MimetypeUtil.detectMimeType(multipartFile.getOriginalFilename());
+                    if(StringUtils.hasText(mimeType) && !mimeTypeSet.contains(mimeType.toLowerCase())) {
+                        return Boolean.FALSE;
+                    }
+                }
+                // 4.2.3、验证文件内容
+                if(Objects.nonNull(contentCheckStrategy) && !contentCheckStrategy.check(detectMimeType, multipartFile)){
+                    return Boolean.FALSE;
+                }
             }
-            // 4、验证通过
+            // 5、验证通过
             return Boolean.TRUE;
         } catch (Exception e) {
             log.error(e.getMessage(), e);
