@@ -15,7 +15,6 @@
  */
 package com.github.hiwepy.validation;
 
-import jakarta.activation.MimetypesFileTypeMap;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.tika.Tika;
 import org.apache.tika.mime.MimeType;
@@ -23,6 +22,7 @@ import org.apache.tika.mime.MimeTypes;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
+import jakarta.activation.MimetypesFileTypeMap;
 
 /**
  * TODO
