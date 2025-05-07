@@ -70,10 +70,4 @@ public @interface FileNotEmpty {
      */
     String[] mimeTypes() default {};
 
-    /**
-     * 是否严格检查文件格式，为true时文件不能为空且需要验证格式
-     * @return the boolean
-     */
-    boolean strict() default false;
-
 }

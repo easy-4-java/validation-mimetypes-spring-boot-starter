@@ -39,7 +39,7 @@ public class Test {
 
     public static void main(String[] args) throws Exception {
 
-        Resource resource = new ClassPathResource("aaaax.xlsx");
+        Resource resource = new ClassPathResource("aaaa.pdf");
         String detectedMediaType = tika.detect(resource.getInputStream());
         MimeType detectMimeType =  DEFAULT_MIME_TYPES.forName(detectedMediaType);
         System.out.println("文件类型为：" + detectMimeType.getAcronym());
@@ -48,7 +48,7 @@ public class Test {
         System.out.println("文件扩展名为：" + FilenameUtils.getExtension(detectMimeType.getExtension()));
         detectMimeType.getExtensions().forEach(System.out::println);
 
-        String type = new MimetypesFileTypeMap().getContentType("aaaax.xlsx");//name:"aa.txt"
+        String type = new MimetypesFileTypeMap().getContentType("aaaa.pdf");//name:"aa.txt"
         System.out.println("文件类型为：" + type);
     }
 
