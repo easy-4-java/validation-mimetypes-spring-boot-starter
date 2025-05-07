@@ -19,16 +19,8 @@ public final class FileContentCheckStrategy implements InitializingBean {
 
     private Map<String, FileContentCheckProvider> fileContentCheckProviderMap;
 
-    public Boolean check(MimeType detectMimeType, MultipartFile multipartFile) {
-        FileContentCheckProvider fileContentCheckProvider = fileContentCheckProviderMap.get(detectMimeType.getName());
-        if (fileContentCheckProvider != null) {
-            return fileContentCheckProvider.check(multipartFile);
-        }
-        return Boolean.TRUE;
-    }
-
-    public Boolean check(String mime, MultipartFile multipartFile) {
-        FileContentCheckProvider fileContentCheckProvider = fileContentCheckProviderMap.get(mime);
+    public Boolean check(String extension, MultipartFile multipartFile) {
+        FileContentCheckProvider fileContentCheckProvider = fileContentCheckProviderMap.get(extension);
         if (fileContentCheckProvider != null) {
             return fileContentCheckProvider.check(multipartFile);
         }
