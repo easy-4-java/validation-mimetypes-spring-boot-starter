@@ -11,7 +11,7 @@ import java.io.InputStream;
 import java.util.Objects;
 
 @Slf4j
-public class TikaUtils {
+public class TikaUtil {
     /**
      * 默认的MimeTypes
      */

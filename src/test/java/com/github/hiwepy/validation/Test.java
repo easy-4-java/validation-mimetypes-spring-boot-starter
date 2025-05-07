@@ -15,13 +15,14 @@
  */
 package com.github.hiwepy.validation;
 
-import com.github.hiwepy.validation.utils.TikaUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.tika.Tika;
 import org.apache.tika.mime.MimeType;
+import org.apache.tika.mime.MimeTypes;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
-import java.io.File;
+import javax.activation.MimetypesFileTypeMap;
 
 /**
  * TODO
@@ -29,16 +30,26 @@ import java.io.File;
  */
 
 public class Test {
+    /**
+     * 默认的MimeTypes
+     */
+    private static final MimeTypes DEFAULT_MIME_TYPES = MimeTypes.getDefaultMimeTypes();
+
+    private static volatile Tika tika = new Tika();
 
     public static void main(String[] args) throws Exception {
 
         Resource resource = new ClassPathResource("aaaa.pdf");
-        MimeType detectMimeType = TikaUtils.detectMimeType(resource.getInputStream());
+        String detectedMediaType = tika.detect(resource.getInputStream());
+        MimeType detectMimeType =  DEFAULT_MIME_TYPES.forName(detectedMediaType);
         System.out.println("文件类型为：" + detectMimeType.getAcronym());
         System.out.println("文件类型为：" + detectMimeType.getType());
         System.out.println("文件扩展名为：" + detectMimeType.getExtension());
         System.out.println("文件扩展名为：" + FilenameUtils.getExtension(detectMimeType.getExtension()));
         detectMimeType.getExtensions().forEach(System.out::println);
+
+        String type = new MimetypesFileTypeMap().getContentType("aaaa.pdf");//name:"aa.txt"
+        System.out.println("文件类型为：" + type);
     }
 
 }

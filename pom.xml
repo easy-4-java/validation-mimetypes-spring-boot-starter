@@ -49,10 +49,10 @@
 			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
 		</snapshotRepository>
 		<repository>
-		    <id>ossrh</id>
+			<id>ossrh</id>
 			<name>Maven Central Staging Repository</name>
-		    <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-		  </repository>
+			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+		</repository>
 	</distributionManagement>
 
 	<build>
@@ -357,7 +357,8 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<commons-io.version>2.16.1</commons-io.version>
+		<asm.version>9.8</asm.version>
+		<commons-io.version>2.19.0</commons-io.version>
 		<maven.version>3.0</maven.version>
        	<maven-gpg-plugin.version>1.6</maven-gpg-plugin.version>
         <maven-jar-plugin.version>3.1.1</maven-jar-plugin.version>
@@ -365,7 +366,7 @@
         <maven-resources-plugin.version>3.1.0</maven-resources-plugin.version>
         <maven-surefire-plugin.version>2.22.1</maven-surefire-plugin.version>
 		<maven-nexus-staging-plugin.version>1.6.8</maven-nexus-staging-plugin.version>
-		<tika.version>2.9.3</tika.version>
+		<tika.version>2.9.4</tika.version>
 	</properties>
 
 	<dependencies>
@@ -410,6 +411,12 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<artifactId>asm</artifactId>
+					<groupId>org.ow2.asm</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<!-- @ConfigurationProperties annotation processing (metadata for IDEs) -->
 		<dependency>
@@ -436,7 +443,11 @@
 		    <groupId>org.springframework</groupId>
 		    <artifactId>spring-webmvc</artifactId>
 		</dependency>
-
+		<dependency>
+			<groupId>org.ow2.asm</groupId>
+			<artifactId>asm</artifactId>
+			<version>${asm.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
@@ -450,6 +461,12 @@
 		<dependency>
 			<groupId>org.apache.tika</groupId>
 			<artifactId>tika-core</artifactId>
+			<version>${tika.version}</version>
+		</dependency>
+		<!-- tika文件解析器整合包 -->
+		<dependency>
+			<groupId>org.apache.tika</groupId>
+			<artifactId>tika-parsers-standard-package</artifactId>
 			<version>${tika.version}</version>
 		</dependency>
 	</dependencies>
