@@ -1,9 +1,9 @@
 package com.github.hiwepy.validation.utils;
 
+import jakarta.activation.MimetypesFileTypeMap;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
-import javax.activation.MimetypesFileTypeMap;
 import java.io.File;
 import java.util.Objects;
 

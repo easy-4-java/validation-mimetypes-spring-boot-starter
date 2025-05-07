@@ -4,6 +4,8 @@ import com.github.hiwepy.validation.constraints.FileNotEmpty;
 import com.github.hiwepy.validation.provider.FileContentCheckStrategy;
 import com.github.hiwepy.validation.utils.MimetypeUtil;
 import com.github.hiwepy.validation.utils.TikaUtil;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.tika.mime.MimeType;
@@ -15,8 +17,6 @@ import org.springframework.util.unit.DataSize;
 import org.springframework.util.unit.DataUnit;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Objects;

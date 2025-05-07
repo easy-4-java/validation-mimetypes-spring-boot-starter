@@ -3,8 +3,8 @@ package com.github.hiwepy.validation.constraints;
 import com.github.hiwepy.validation.internal.constraintvalidators.FileNotEmptyValidator;
 import com.github.hiwepy.validation.internal.constraintvalidators.FilesNotEmptyValidator;
 
-import javax.validation.Constraint;
-import javax.validation.Payload;
+import jakarta.validation.Constraint;
+import jakarta.validation.Payload;
 import java.lang.annotation.*;
 import java.util.function.Function;
 
