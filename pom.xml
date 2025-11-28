@@ -5,14 +5,14 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.3.0</version>
+		<version>3.4.0</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 
 	<groupId>com.github.hiwepy</groupId>
 	<artifactId>validation-mimetypes-spring-boot-starter</artifactId>
 	<description>File type verification implemented by validation-api + mimetypes.</description>
-	<version>3.3.x.20250430-SNAPSHOT</version>
+	<version>3.4.x.20251128-SNAPSHOT</version>
 	<name>${project.groupId}:${project.artifactId}</name>
    	<url>https://github.com/hiwepy/${project.artifactId}</url>
 	<packaging>jar</packaging>
