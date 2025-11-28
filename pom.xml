@@ -381,7 +381,7 @@
 		<asm.version>9.8</asm.version>
 		<commons-io.version>2.19.0</commons-io.version>
         <commons-lang3.version>3.18.0</commons-lang3.version>
-		<tika.version>3.1.0</tika.version>
+		<tika.version>3.2.3</tika.version>
 	</properties>
 
 	<dependencies>
