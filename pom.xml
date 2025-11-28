@@ -380,6 +380,7 @@
 		<!-- Dependency versions -->
 		<asm.version>9.8</asm.version>
 		<commons-io.version>2.19.0</commons-io.version>
+        <commons-lang3.version>3.18.0</commons-lang3.version>
 		<tika.version>3.1.0</tika.version>
 	</properties>
 
@@ -427,8 +428,8 @@
 			<scope>test</scope>
 			<exclusions>
 				<exclusion>
+                    <groupId>org.ow2.asm</groupId>
 					<artifactId>asm</artifactId>
-					<groupId>org.ow2.asm</groupId>
 				</exclusion>
 			</exclusions>
 		</dependency>
@@ -470,7 +471,8 @@
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
-		</dependency>
+            <version>${commons-lang3.version}</version>
+        </dependency>
 		<!-- https://mvnrepository.com/artifact/org.apache.tika/tika-core -->
 		<dependency>
 			<groupId>org.apache.tika</groupId>
