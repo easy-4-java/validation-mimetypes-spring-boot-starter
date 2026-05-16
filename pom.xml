@@ -9,7 +9,7 @@
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 
-	<groupId>com.github.hiwepy</groupId>
+	<groupId>io.github.hiwepy</groupId>
 	<artifactId>validation-mimetypes-spring-boot-starter</artifactId>
 	<description>File type verification implemented by validation-api + mimetypes.</description>
 	<version>2.3.x.20250430-SNAPSHOT</version>
