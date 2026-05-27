@@ -1,7 +1,7 @@
-package com.github.hiwepy.validation;
+package io.github.hiwepy.validation;
 
-import com.github.hiwepy.validation.provider.FileContentCheckProvider;
-import com.github.hiwepy.validation.provider.FileContentCheckStrategy;
+import io.github.hiwepy.validation.provider.FileContentCheckProvider;
+import io.github.hiwepy.validation.provider.FileContentCheckStrategy;
 import org.apache.tika.Tika;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
