@@ -1,4 +1,4 @@
-package com.github.hiwepy.validation.provider;
+package io.github.hiwepy.validation.provider;
 
 import org.springframework.web.multipart.MultipartFile;
 
