@@ -1,9 +1,9 @@
-package com.github.hiwepy.validation.internal.constraintvalidators;
+package io.github.hiwepy.validation.internal.constraintvalidators;
 
-import com.github.hiwepy.validation.constraints.FileNotEmpty;
-import com.github.hiwepy.validation.provider.FileContentCheckStrategy;
-import com.github.hiwepy.validation.utils.MimetypeUtil;
-import com.github.hiwepy.validation.utils.TikaUtil;
+import io.github.hiwepy.validation.constraints.FileNotEmpty;
+import io.github.hiwepy.validation.provider.FileContentCheckStrategy;
+import io.github.hiwepy.validation.utils.MimetypeUtil;
+import io.github.hiwepy.validation.utils.TikaUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.ArrayUtils;
