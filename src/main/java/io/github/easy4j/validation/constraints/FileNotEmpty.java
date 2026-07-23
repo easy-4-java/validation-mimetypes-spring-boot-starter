@@ -1,7 +1,7 @@
-package com.github.hiwepy.validation.constraints;
+package io.github.easy4j.validation.constraints;
 
-import com.github.hiwepy.validation.internal.constraintvalidators.FileNotEmptyValidator;
-import com.github.hiwepy.validation.internal.constraintvalidators.FilesNotEmptyValidator;
+import io.github.easy4j.validation.internal.constraintvalidators.FileNotEmptyValidator;
+import io.github.easy4j.validation.internal.constraintvalidators.FilesNotEmptyValidator;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;

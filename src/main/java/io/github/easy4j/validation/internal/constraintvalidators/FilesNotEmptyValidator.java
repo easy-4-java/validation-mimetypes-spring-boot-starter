@@ -1,8 +1,8 @@
-package com.github.hiwepy.validation.internal.constraintvalidators;
+package io.github.easy4j.validation.internal.constraintvalidators;
 
-import com.github.hiwepy.validation.MimeTypeDetectorHolder;
-import com.github.hiwepy.validation.constraints.FileNotEmpty;
-import com.github.hiwepy.validation.utils.FiletypeUtils;
+import io.github.easy4j.validation.MimeTypeDetectorHolder;
+import io.github.easy4j.validation.constraints.FileNotEmpty;
+import io.github.easy4j.validation.utils.FiletypeUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
